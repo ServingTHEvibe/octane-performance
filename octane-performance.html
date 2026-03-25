@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OCTANE PERFORMANCE | Elite Athletic Development</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #E60000;
+  --red-dark: #B30000;
+  --black: #0D0D0D;
+  --surface: #1A1A1A;
+  --surface-low: #141414;
+  --white: #FFFFFF;
+  --silver: #C0C0C0;
+  --outline: rgba(255,255,255,0.06);
+}
+html { overflow-x: hidden; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: none;
+}
+a { text-decoration: none; color: inherit; }
+button { border: none; cursor: none; }
+.bebas { font-family: 'Bebas Neue', cursive; }
+.space-grotesk { font-family: 'Space Grotesk', sans-serif; }
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+#cursor {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: var(--red);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(230,0,0,0.45);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.35s ease, height 0.35s ease, border-color 0.35s ease;
+}
+body.cursor-hover #cursor { width: 18px; height: 18px; }
+body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(230,0,0,0.75); }
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+}
+#loader-logo-wrap { overflow: hidden; }
+#loader-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(5rem, 12vw, 9rem);
+  letter-spacing: 0.12em;
+  color: var(--white);
+  display: block;
+  transform: translateY(110%);
+}
+#loader-sub {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: var(--silver);
+  opacity: 0;
+  margin-top: -1.5rem;
+  text-align: center;
+}
+#loader-bar-track {
+  width: 180px;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+#loader-bar {
+  height: 100%;
+  background: var(--red);
+  width: 0%;
+}
+#loader-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  color: var(--silver);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: -1.5rem;
+}
+
+/* ============================================================
+   FILM GRAIN / NOISE OVERLAY
+   ============================================================ */
+#grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-move 0.08s steps(1) infinite;
+}
+@keyframes grain-move {
+  0%   { transform: translate(0,0); }
+  10%  { transform: translate(-3%,-2%); }
+  20%  { transform: translate(2%, 4%); }
+  30%  { transform: translate(-2%, 1%); }
+  40%  { transform: translate(3%,-3%); }
+  50%  { transform: translate(-1%, 3%); }
+  60%  { transform: translate(2%,-1%); }
+  70%  { transform: translate(-3%, 2%); }
+  80%  { transform: translate(1%,-4%); }
+  90%  { transform: translate(-2%, 2%); }
+  100% { transform: translate(3%,-1%); }
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1.75rem 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: padding 0.5s ease, background 0.5s ease, border-color 0.5s ease;
+  border-bottom: 1px solid transparent;
+}
+#navbar.scrolled {
+  padding: 1.1rem 3.5rem;
+  background: rgba(13,13,13,0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-color: var(--outline);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.9rem;
+  letter-spacing: 0.06em;
+  color: var(--white);
+}
+.nav-links { display: flex; gap: 3rem; align-items: center; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--silver);
+  position: relative;
+  transition: color 0.3s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; left: 0;
+  width: 0; height: 1px;
+  background: var(--red);
+  transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-link:hover { color: var(--white); }
+.nav-link:hover::after { width: 100%; }
+.nav-link.active { color: var(--red); }
+.nav-link.active::after { width: 100%; }
+
+.btn-nav {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+  background: var(--red);
+  color: var(--white);
+  padding: 0.55rem 1.6rem;
+  transition: background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-nav::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.08);
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.btn-nav:hover { background: var(--red-dark); transform: scale(1.04); }
+.btn-nav:hover::after { transform: translateX(100%); }
+.btn-nav:active { transform: scale(0.96); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+.hero-media {
+  position: relative;
+  width: 60%;
+  overflow: hidden;
+}
+.hero-media img {
+  width: 100%;
+  height: 115%;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(1) contrast(1.25);
+  will-change: transform;
+}
+.hero-tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(230,0,0,0.06);
+  mix-blend-mode: multiply;
+  z-index: 1;
+}
+.hero-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(13,13,13,0) 55%, #0D0D0D 100%);
+  z-index: 2;
+}
+.hero-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
+  pointer-events: none;
+}
+.hero-content {
+  position: relative;
+  z-index: 10;
+  width: 40%;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 4rem 4rem 3.5rem;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: var(--red);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateX(-20px);
+}
+.hero-headline {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(5rem, 7.5vw, 7rem);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  overflow: hidden;
+}
+.hero-headline-line { overflow: hidden; display: block; }
+.hero-headline-line span { display: block; transform: translateY(110%); }
+.hero-rotating-wrap {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  color: var(--red);
+  height: 1.05em;
+  overflow: hidden;
+  margin-top: 0.6rem;
+}
+.hero-rotating-word {
+  display: block;
+  transform: translateY(110%);
+}
+.hero-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.75;
+  font-weight: 300;
+  max-width: 340px;
+  margin-top: 1.75rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.hero-cta-row {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.btn-primary {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  background: var(--red);
+  color: var(--white);
+  padding: 0.9rem 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover { background: var(--red-dark); transform: scale(1.04); }
+.btn-primary:active { transform: scale(0.96); }
+.btn-ghost {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: var(--silver);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 0.9rem 2rem;
+  transition: background 0.3s, color 0.3s;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+
+/* RED LINE ACCENT */
+.hero-red-line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ============================================================
+   MARQUEE
+   ============================================================ */
+.marquee-section {
+  background: #181818;
+  padding: 1.3rem 0;
+  overflow: hidden;
+  border-top: 1px solid var(--outline);
+  border-bottom: 1px solid var(--outline);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-run 40s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 2rem;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.55rem;
+  letter-spacing: 0.18em;
+  color: var(--silver);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+.marquee-item:hover { color: var(--white); }
+.marquee-dot { color: var(--red); font-size: 0.9rem; }
+@keyframes marquee-run {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface-low);
+  border-bottom: 1px solid var(--outline);
+}
+.stat-cell {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid var(--outline);
+  position: relative;
+  overflow: hidden;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-cell::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.stat-cell:hover::after { transform: scaleX(1); }
+.stat-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(3.5rem, 5vw, 5rem);
+  line-height: 1;
+  color: var(--white);
+}
+.stat-num.accent { color: var(--red); }
+.stat-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--silver);
+  margin-top: 0.5rem;
+}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about-section {
+  padding: 9rem 6rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7rem;
+  align-items: center;
+}
+.about-img-wrap { position: relative; }
+.about-img-border {
+  position: absolute;
+  top: -1.5rem; left: -1.5rem;
+  right: 1.5rem; bottom: 1.5rem;
+  border: 2px solid rgba(230,0,0,0.22);
+  z-index: 0;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.about-img-wrap:hover .about-img-border { transform: translate(-6px,-6px); }
+.about-img-clip {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  clip-path: inset(100% 0 0 0);
+}
+.about-img-clip img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.2);
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.about-img-wrap:hover .about-img-clip img { transform: scale(1.04); }
+.about-badge {
+  position: absolute;
+  bottom: 2rem; right: -2rem;
+  background: var(--red);
+  padding: 1.25rem 1.5rem;
+  z-index: 5;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.55);
+  opacity: 0;
+  transform: translateX(20px);
+}
+.about-badge-name {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  color: var(--white);
+  letter-spacing: 0.05em;
+}
+.about-badge-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  margin-top: 0.2rem;
+}
+.about-content { display: flex; flex-direction: column; gap: 2rem; }
+.eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: var(--red);
+  font-weight: 700;
+}
+.section-hed {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(4rem, 5.5vw, 5.5rem);
+  line-height: 0.9;
+  color: var(--white);
+}
+.body-copy {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.96rem;
+  color: var(--silver);
+  line-height: 1.78;
+  font-weight: 300;
+}
+.pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--outline);
+}
+.pillar h4 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+.pillar p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: var(--silver);
+  line-height: 1.55;
+}
+
+/* ============================================================
+   PROGRAMS
+   ============================================================ */
+.programs-section {
+  background: var(--surface-low);
+  padding: 8rem 4rem;
+}
+.programs-header {
+  max-width: 1400px;
+  margin: 0 auto 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+}
+.btn-text-link {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--red);
+  padding-bottom: 0.2rem;
+  transition: color 0.3s;
+}
+.btn-text-link:hover { color: var(--red); }
+.programs-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.prog-card {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  padding: 2.5rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 440px;
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: background 0.4s;
+  will-change: transform;
+}
+.prog-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--red);
+  transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.prog-card:hover { background: #222; }
+.prog-card:hover::before { width: 100%; }
+.prog-card-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 0.85rem;
+  color: var(--red);
+  letter-spacing: 0.25em;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+.prog-icon {
+  font-size: 2.8rem;
+  color: var(--red);
+  display: block;
+  margin-bottom: 1.75rem;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+.prog-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.1rem;
+  line-height: 0.95;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+.prog-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.83rem;
+  color: var(--silver);
+  line-height: 1.65;
+}
+.prog-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  margin-top: 2.5rem;
+  transition: gap 0.3s;
+}
+.prog-card:hover .prog-link { gap: 0.9rem; }
+
+/* ============================================================
+   ROSTER
+   ============================================================ */
+.roster-section {
+  background: var(--black);
+  padding: 8rem 0 6rem;
+  overflow: hidden;
+}
+.roster-header {
+  padding: 0 4rem;
+  margin-bottom: 3rem;
+}
+.roster-scroll {
+  display: flex;
+  gap: 1.75rem;
+  padding: 0.5rem 4rem 2rem;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+.roster-scroll:active { cursor: grabbing; }
+.roster-scroll::-webkit-scrollbar { display: none; }
+.athlete-card {
+  flex: none;
+  width: 340px;
+  aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+}
+.athlete-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.7s ease, transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  display: block;
+}
+.athlete-card:hover img { filter: grayscale(0); transform: scale(1.06); }
+.athlete-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(13,13,13,0.95) 0%, transparent 60%);
+}
+.athlete-info {
+  position: absolute;
+  bottom: 1.5rem; left: 1.5rem;
+}
+.athlete-name {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.65rem;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+.athlete-sport {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+
+/* ============================================================
+   PHILOSOPHY TILES
+   ============================================================ */
+.philosophy-section { background: var(--surface); }
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.phi-tile {
+  aspect-ratio: 1;
+  border: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.phi-tile-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.45s cubic-bezier(0.7,0,0.3,1);
+  z-index: 0;
+}
+.phi-tile:hover .phi-tile-fill { transform: scaleY(1); }
+.phi-word {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.18);
+  position: relative;
+  z-index: 1;
+  transition: color 0.35s, -webkit-text-stroke 0.35s;
+  text-align: center;
+  padding: 0 1rem;
+}
+.phi-tile:hover .phi-word {
+  color: var(--white);
+  -webkit-text-stroke: 0 transparent;
+}
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+.cta-section {
+  background: var(--black);
+  padding: 10rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+}
+.cta-bg-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(8rem, 18vw, 18rem);
+  color: rgba(230,0,0,0.025);
+  pointer-events: none;
+  letter-spacing: -0.02em;
+  user-select: none;
+  white-space: nowrap;
+}
+.cta-hed {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(4rem, 8.5vw, 8rem);
+  line-height: 0.95;
+  color: var(--white);
+  margin-bottom: 3rem;
+  position: relative;
+}
+.cta-hed span { color: var(--red); }
+.cta-btns {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+.btn-cta {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-cta.solid { background: var(--red); color: var(--white); }
+.btn-cta.solid:hover { background: var(--red-dark); transform: scale(1.04); }
+.btn-cta.outline { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.75); }
+.btn-cta.outline:hover { background: rgba(255,255,255,0.07); transform: scale(1.04); }
+.cta-loc {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  color: var(--silver);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-top: 3.5rem;
+  position: relative;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  background: var(--black);
+  border-top: 1px solid var(--outline);
+}
+.footer-inner {
+  padding: 3rem 4rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  color: var(--white);
+  letter-spacing: 0.1em;
+}
+.footer-copy {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6rem;
+  color: rgba(192,192,192,0.4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+.footer-links { display: flex; flex-wrap: wrap; gap: 2rem; }
+.footer-link {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--silver);
+  transition: color 0.3s;
+}
+.footer-link:hover { color: var(--red); }
+.footer-icons { display: flex; gap: 1rem; align-items: center; }
+.footer-icon {
+  font-size: 1.25rem;
+  color: var(--silver);
+  transition: color 0.3s;
+  cursor: none;
+}
+.footer-icon:hover { color: var(--red); }
+.footer-bottom {
+  text-align: center;
+  padding: 0 4rem 1.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  color: rgba(192,192,192,0.25);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .programs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1024px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .about-section { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 4rem; }
+  .about-badge { right: 1rem; }
+  .philosophy-grid { grid-template-columns: repeat(2, 1fr); }
+  #navbar { padding: 1.25rem 2rem; }
+  #navbar.scrolled { padding: 0.85rem 2rem; }
+  .nav-links { display: none; }
+  .hero { flex-direction: column; }
+  .hero-media { width: 100%; height: 50vh; }
+  .hero-fade { background: linear-gradient(to bottom, transparent 50%, #0D0D0D 100%); }
+  .hero-content { width: 100%; padding: 3rem 2rem; }
+  .programs-section { padding: 5rem 2rem; }
+  .roster-header { padding: 0 2rem; }
+  .roster-scroll { padding: 0.5rem 2rem 2rem; }
+  .cta-section { padding: 6rem 2rem; }
+  .footer-inner { padding: 2.5rem 2rem; }
+}
+@media (max-width: 640px) {
+  .programs-grid { grid-template-columns: 1fr; }
+  .philosophy-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-section { padding: 4rem 1.5rem; }
+  .cta-btns { flex-direction: column; align-items: center; }
+  .btn-cta { width: 100%; max-width: 320px; }
+  .footer-inner { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+}
+
+/* ============================================================
+   INITIAL HIDDEN STATE (for GSAP)
+   ============================================================ */
+body.is-loading main, body.is-loading footer, body.is-loading #navbar {
+  visibility: hidden;
+}
+</style>
+</head>
+
+<body class="is-loading">
+
+<!-- Film Grain -->
+<div id="grain"></div>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Loader -->
+<div id="loader">
+  <div id="loader-logo-wrap">
+    <span id="loader-logo">OCTANE</span>
+  </div>
+  <div id="loader-sub">ELITE ATHLETIC DEVELOPMENT</div>
+  <div id="loader-bar-track"><div id="loader-bar"></div></div>
+  <div id="loader-num">0%</div>
+</div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <div class="nav-logo">OCTANE</div>
+  <div class="nav-links">
+    <a class="nav-link active" href="#">Programs</a>
+    <a class="nav-link" href="#">About</a>
+    <a class="nav-link" href="#">Roster</a>
+    <a class="nav-link" href="#">Gallery</a>
+  </div>
+  <button class="btn-nav">Apply Now</button>
+</nav>
+
+<main>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero" id="hero">
+    <div class="hero-media" id="hero-media">
+      <img id="hero-img" alt="Athlete in intense motion" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5vQjqVX_DXvK0HxeDHTB__FK6iiMiqkqFz1IMn-qcHL2RPSOvsmsdD0afYagq9r9MN6wqVtlQ3Vms27AGiYm0WGzQ_6Nkg0t_4DThWqk0QQNLVBcfGNkMR-3mp1f2UjkgwJ0iCrI5pmaVjOVSfO5L5RKhYle1UNxMK2uEGjw3qA3t3C0ZtObRhYKy7PPZ-eN94WAWvkYuckvHXoDO0Khz5R5k_rSUyihx8uFrBmdx6f8t7kXTBotLWbIUVm9sGTJkLI-IG0nVxMA"/>
+      <div class="hero-tint"></div>
+      <div class="hero-fade"></div>
+      <div class="hero-scan"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="hero-eyebrow">Johnston, Iowa &nbsp;/&nbsp; Est. 2014</div>
+      <h1 class="hero-headline" id="hero-headline">
+        <span class="hero-headline-line"><span>BUILT FOR</span></span>
+        <span class="hero-headline-line"><span>THE ELITE.</span></span>
+      </h1>
+      <div class="hero-rotating-wrap">
+        <span class="hero-rotating-word" id="hero-word">STRONGER.</span>
+      </div>
+      <p class="hero-body" id="hero-body">
+        Octane Performance is a kinetic laboratory for athletes who refuse ordinary. Iowa-born. NFL-proven. Zero shortcuts.
+      </p>
+      <div class="hero-cta-row" id="hero-cta">
+        <button class="btn-primary">
+          APPLY FOR TRAINING <span class="material-symbols-outlined" style="font-size:1.1rem;">arrow_forward</span>
+        </button>
+        <button class="btn-ghost">WATCH THE STORY</button>
+      </div>
+      <div class="hero-red-line" id="hero-red-line"></div>
+    </div>
+  </header>
+
+  <!-- ===== MARQUEE ===== -->
+  <div class="marquee-section">
+    <div class="marquee-track" id="marquee-track">
+      <span class="marquee-item">NFL ATHLETES TRAINED <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">COLLEGIATE DEVELOPMENT <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">SPEED <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">STRENGTH <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">AGILITY <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">REACTION TIME <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">KINETIC POWER <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">NFL ATHLETES TRAINED <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">COLLEGIATE DEVELOPMENT <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">SPEED <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">STRENGTH <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">AGILITY <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">REACTION TIME <span class="marquee-dot">&#9679;</span></span>
+      <span class="marquee-item">KINETIC POWER <span class="marquee-dot">&#9679;</span></span>
+    </div>
+  </div>
+
+  <!-- ===== STATS ===== -->
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-cell">
+      <div class="stat-num" data-count="300" data-suffix="+">0</div>
+      <div class="stat-label">Athletes Developed</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num accent">NFL</div>
+      <div class="stat-label">Caliber Clients</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" data-count="10" data-suffix="+">0</div>
+      <div class="stat-label">Years Training</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" data-count="0">0</div>
+      <div class="stat-label">Shortcuts</div>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="about-section">
+      <div class="about-img-wrap" id="about-img-wrap">
+        <div class="about-img-border"></div>
+        <div class="about-img-clip" id="about-img-clip">
+          <img alt="Alex Broadus, Founder & Head Coach" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJBQpxMsTBBwQ2iS1EXMCgdSyTuuU1Qg0NCJJ9A4RkglQ-HhScbmB8rCMvwSZcpq3aLaTFh3e0IBIaxSsXdyxp4mpZxmMo8zEbCF7jyU2A4WkBMQTBMkIXhDq_u5IQwjwUMdtCVm1CkM4V4eR5iikS_TNZef-v_3G2UHD7TywmmJlok0LA_IW2vbrF0pWM-gZobohUoo2guSmPunjENzJUzwbNKHh7o-CV281lATYtBh0zoU4VUcBWI8jWsEdnUlR4P2aYA0W85Ss"/>
+        </div>
+        <div class="about-badge" id="about-badge">
+          <div class="about-badge-name">ALEX BROADUS</div>
+          <div class="about-badge-title">Founder &amp; Head Coach</div>
+        </div>
+      </div>
+      <div class="about-content" id="about-content">
+        <span class="eyebrow">The Blueprint</span>
+        <h2 class="section-hed">IOWA-BORN.<br/>NFL-PROVEN.</h2>
+        <p class="body-copy">
+          Octane Performance isn't just a gym; it's a kinetic laboratory. Founded by Alex Broadus, our mission is to translate raw potential into elite performance. From the cornfields of Johnston to the lights of the NFL, we provide the technical precision required for the world's most demanding arenas.
+        </p>
+        <div class="pillars">
+          <div class="pillar">
+            <h4>Precision</h4>
+            <p>Biomechanical analysis for every movement pattern.</p>
+          </div>
+          <div class="pillar">
+            <h4>Power</h4>
+            <p>Explosive development cycles built to last.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROGRAMS ===== -->
+  <section class="programs-section" id="programs">
+    <div class="programs-header">
+      <div>
+        <span class="eyebrow">Services</span>
+        <h2 class="section-hed" style="margin-top:0.75rem;">ELITE PROGRAMS</h2>
+      </div>
+      <button class="btn-text-link">VIEW ALL TRACKS</button>
+    </div>
+    <div class="programs-grid">
+      <div class="prog-card" id="pc-1">
+        <div>
+          <div class="prog-card-num">01</div>
+          <span class="material-symbols-outlined prog-icon">speed</span>
+          <h3 class="prog-title">SPEED<br/>CHAMBER</h3>
+          <p class="prog-desc">Linear and lateral acceleration mechanics for elite field sports. Maximum velocity development.</p>
+        </div>
+        <a class="prog-link" href="#">LEARN MORE <span class="material-symbols-outlined" style="font-size:0.95rem;">arrow_forward</span></a>
+      </div>
+      <div class="prog-card" id="pc-2">
+        <div>
+          <div class="prog-card-num">02</div>
+          <span class="material-symbols-outlined prog-icon">fitness_center</span>
+          <h3 class="prog-title">KINETIC<br/>STRENGTH</h3>
+          <p class="prog-desc">Force production and neural drive optimization for peak power output under pressure.</p>
+        </div>
+        <a class="prog-link" href="#">LEARN MORE <span class="material-symbols-outlined" style="font-size:0.95rem;">arrow_forward</span></a>
+      </div>
+      <div class="prog-card" id="pc-3">
+        <div>
+          <div class="prog-card-num">03</div>
+          <span class="material-symbols-outlined prog-icon">military_tech</span>
+          <h3 class="prog-title">PRO<br/>COMBINE</h3>
+          <p class="prog-desc">Specific preparation for draft prospects and professional assessments. No guesswork.</p>
+        </div>
+        <a class="prog-link" href="#">LEARN MORE <span class="material-symbols-outlined" style="font-size:0.95rem;">arrow_forward</span></a>
+      </div>
+      <div class="prog-card" id="pc-4">
+        <div>
+          <div class="prog-card-num">04</div>
+          <span class="material-symbols-outlined prog-icon">monitoring</span>
+          <h3 class="prog-title">RECOVERY<br/>SYSTEMS</h3>
+          <p class="prog-desc">Advanced restoration protocols designed to maximize training frequency and longevity.</p>
+        </div>
+        <a class="prog-link" href="#">LEARN MORE <span class="material-symbols-outlined" style="font-size:0.95rem;">arrow_forward</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ROSTER ===== -->
+  <section class="roster-section" id="roster">
+    <div class="roster-header">
+      <h2 class="section-hed">THE ROSTER</h2>
+      <p class="eyebrow" style="margin-top:0.6rem; color:var(--silver);">Join the ranks of the elite</p>
+    </div>
+    <div class="roster-scroll" id="roster-scroll">
+      <div class="athlete-card">
+        <img alt="Tyree Jackson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBURBXd4rNkJWcrFKK0Us4kw5xU-Kkugp_PwWfUD4PijiQDPqmhg6fc86IZU5eHwmV79bcg4ROyuLl-UX7geroRYPOtKShR-2JBf-gANkh_uR-HhYZk65z9mDhXf4jOv--SqkTzupz841N6K1OpvtSrlr2FKHKJ5yVtydTHpMrTDwz6TTiU2pgeqXLZSQOx2sbfBh8n2B9TU2BvQs2hYhefFHaer1DuZYSshtUBH0IC4M7VV2_YntEPYVIEWtEG0wxe5Lt9novyciI"/>
+        <div class="athlete-gradient"></div>
+        <div class="athlete-info">
+          <div class="athlete-name">TYREE JACKSON</div>
+          <div class="athlete-sport">D1 FOOTBALL</div>
+        </div>
+      </div>
+      <div class="athlete-card">
+        <img alt="Sarah Mason" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYG8zOMHU6Xkh3Krm40xQuc8u99knFaL0icK_SBq1AY1lbFl5SLZcgnB4lpgRVyZUfkrmha3-tLZk8vkfTs-yTOm0huSo3L6GuUeicb2vp7T0FdEcoSgnEzpuiPy33xwStJnwirppu_8ypQ5qPUdwghgJ91OxndbeAN2H2mR0j8ZrsxoaqoK9wVNfaE2WAJDgmr9bEel80_YzYgRdU-99wILsbHHjOiiqTGx46aqBUzIzqcaeWKbf3psJ6g2VkFKtC4mG7kUONPLM"/>
+        <div class="athlete-gradient"></div>
+        <div class="athlete-info">
+          <div class="athlete-name">SARAH MASON</div>
+          <div class="athlete-sport">PRO TRACK</div>
+        </div>
+      </div>
+      <div class="athlete-card">
+        <img alt="Jordan Reed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy8lUL9JV6S_1pkc0qeMPHifzxgXg2jyS93DB2qYX-7urt27wpKYnM3Q80jEUQtXmy8nPy3CRaD3hJt_z4pbbvxM7u8kFueDyIgKwcS6vuSXgFF6pojauUL89cgiDxk_TgYdgkF-S8ckHF_lIzYOti9-n-g46aGRm776l6DsLYn6YgXEdAD2buTJpZi8ZIBtQwskSnsbCbSNliMm5MF0Rylrm-yD5M_tlD3ADeMg5nCMqnLYdQWSbBU5ErVy5VLIRpfgFtFl9qWi0"/>
+        <div class="athlete-gradient"></div>
+        <div class="athlete-info">
+          <div class="athlete-name">JORDAN REED</div>
+          <div class="athlete-sport">EURO LEAGUE</div>
+        </div>
+      </div>
+      <div class="athlete-card">
+        <img alt="Marcus Vance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7H0QQsuZmy3-y4KflwgrKodDfcjUrfxo1HsBqa2fjpmIYvKpUlXqXBS-jm9W3WAiPmvkZKE_MSqYxu2VbL96RCTdh3j43bDUFDT3JQNFBm1q6zBiLmX_Lvq7iinWyCnqMsY44911GVEGRYTM_dek3RIumCQWV8tzK4fsjJPWSKREfA9H8GEOKZp_jxX5XWc3KOGtT81GglymcOlKLUInQfYqtq2eQFXqxtT0Wx0vETdXrqmt9UrajadBuUMPhTgELko4L1Gwmxlg"/>
+        <div class="athlete-gradient"></div>
+        <div class="athlete-info">
+          <div class="athlete-name">MARCUS VANCE</div>
+          <div class="athlete-sport">NFL LINEBACKER</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PHILOSOPHY ===== -->
+  <section class="philosophy-section" id="philosophy">
+    <div class="philosophy-grid">
+      <div class="phi-tile"><div class="phi-tile-fill"></div><span class="phi-word">SPEED</span></div>
+      <div class="phi-tile"><div class="phi-tile-fill"></div><span class="phi-word">STRENGTH</span></div>
+      <div class="phi-tile"><div class="phi-tile-fill"></div><span class="phi-word">AGILITY</span></div>
+      <div class="phi-tile"><div class="phi-tile-fill"></div><span class="phi-word">REACTION</span></div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section" id="cta">
+    <div class="cta-bg-text">OCTANE</div>
+    <h2 class="cta-hed" id="cta-hed">
+      READY TO OPERATE<br/>AT FULL <span>OCTANE?</span>
+    </h2>
+    <div class="cta-btns" id="cta-btns">
+      <button class="btn-cta solid">START APPLICATION</button>
+      <button class="btn-cta outline">VISIT FACILITY</button>
+    </div>
+    <p class="cta-loc" id="cta-loc">JOHNSTON, IOWA &nbsp;&#8226;&nbsp; EST. 2014</p>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">OCTANE PERFORMANCE</div>
+      <div class="footer-copy">&copy; 2024 OCTANE PERFORMANCE. THE KINETIC VAULT.</div>
+    </div>
+    <div class="footer-links">
+      <a class="footer-link" href="#">Programs</a>
+      <a class="footer-link" href="#">About</a>
+      <a class="footer-link" href="#">Roster</a>
+      <a class="footer-link" href="#">Gallery</a>
+      <a class="footer-link" href="#">Privacy</a>
+      <a class="footer-link" href="#">Terms</a>
+    </div>
+    <div class="footer-icons">
+      <span class="material-symbols-outlined footer-icon">share</span>
+      <span class="material-symbols-outlined footer-icon">location_on</span>
+    </div>
+  </div>
+  <div class="footer-bottom">Designed for those who demand more.</div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.5/dist/lenis.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // LOADER
+  // ============================================================
+  const loaderEl  = document.getElementById('loader');
+  const loaderLogo = document.getElementById('loader-logo');
+  const loaderSub = document.getElementById('loader-sub');
+  const loaderBar = document.getElementById('loader-bar');
+  const loaderNum = document.getElementById('loader-num');
+  let pct = 0;
+
+  // Animate logo in
+  gsap.to(loaderLogo, { y: 0, duration: 0.9, ease: 'power4.out', delay: 0.1 });
+  gsap.to(loaderSub,  { opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.5 });
+
+  const ticker = setInterval(() => {
+    pct += Math.random() * 14 + 3;
+    if (pct >= 100) {
+      pct = 100;
+      clearInterval(ticker);
+      loaderBar.style.width = '100%';
+      loaderNum.textContent = '100%';
+      setTimeout(killLoader, 420);
+    } else {
+      loaderBar.style.width = pct + '%';
+      loaderNum.textContent = Math.floor(pct) + '%';
+    }
+  }, 90);
+
+  function killLoader() {
+    const tl = gsap.timeline({
+      onComplete: () => {
+        loaderEl.style.display = 'none';
+        document.body.classList.remove('is-loading');
+        initPage();
+      }
+    });
+    tl.to(loaderSub,  { opacity: 0, duration: 0.3 })
+      .to(loaderLogo, { yPercent: -110, duration: 0.7, ease: 'power4.in' }, '-=0.2')
+      .to(loaderEl,   { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, '-=0.4');
+  }
+
+  // ============================================================
+  // CURSOR
+  // ============================================================
+  const cursor    = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    gsap.set(cursor, { x: mx, y: my });
+  });
+
+  (function followRing() {
+    rx += (mx - rx) * 0.11;
+    ry += (my - ry) * 0.11;
+    gsap.set(cursorRing, { x: rx, y: ry });
+    requestAnimationFrame(followRing);
+  })();
+
+  function addHoverTargets() {
+    document.querySelectorAll('a, button, .athlete-card, .prog-card, .phi-tile, .footer-icon, .nav-link').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+  }
+
+  // ============================================================
+  // SMOOTH SCROLL — Lenis
+  // ============================================================
+  let lenis;
+  function initLenis() {
+    lenis = new Lenis({
+      duration: 1.45,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      ScrollTrigger.update();
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  }
+
+  // ============================================================
+  // NAV
+  // ============================================================
+  const navbar = document.getElementById('navbar');
+  function initNav() {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+  }
+
+  // ============================================================
+  // HERO ANIMATIONS
+  // ============================================================
+  function animateHero() {
+    const tl = gsap.timeline({ delay: 0.1 });
+
+    // Image reveal from bottom (parallax starts at 0)
+    gsap.set('#hero-img', { yPercent: -8 });
+
+    // Eyebrow
+    tl.to('#hero-eyebrow', {
+      opacity: 1, x: 0, duration: 0.7, ease: 'power3.out'
+    });
+
+    // Headline lines
+    tl.to('.hero-headline-line span', {
+      y: 0,
+      duration: 1.1,
+      ease: 'power4.out',
+      stagger: 0.12,
+    }, '-=0.4');
+
+    // Rotating word
+    tl.to('#hero-word', { y: 0, duration: 0.9, ease: 'power4.out' }, '-=0.6');
+
+    // Body
+    tl.to('#hero-body', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4');
+
+    // CTA
+    tl.to('#hero-cta', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4');
+
+    // Red line
+    tl.to('#hero-red-line', { scaleX: 1, duration: 0.8, ease: 'power4.out' }, '-=0.5');
+
+    // Hero parallax on scroll
+    gsap.to('#hero-img', {
+      yPercent: 18,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      }
+    });
+
+    // Rotating words cycle
+    const words = ['STRONGER.', 'FASTER.', 'SHARPER.', 'ELITE.'];
+    let wi = 0;
+    setInterval(() => {
+      wi = (wi + 1) % words.length;
+      const wordEl = document.getElementById('hero-word');
+      gsap.to(wordEl, {
+        y: '-110%',
+        duration: 0.4,
+        ease: 'power3.in',
+        onComplete: () => {
+          wordEl.textContent = words[wi];
+          gsap.fromTo(wordEl, { y: '110%' }, { y: '0%', duration: 0.5, ease: 'power3.out' });
+        }
+      });
+    }, 2600);
+  }
+
+  // ============================================================
+  // STATS COUNTERS
+  // ============================================================
+  function initCounters() {
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      let triggered = false;
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 88%',
+        onEnter: () => {
+          if (triggered) return;
+          triggered = true;
+          const obj = { val: 0 };
+          gsap.to(obj, {
+            val: target,
+            duration: target === 0 ? 0.5 : 2,
+            ease: 'power2.out',
+            onUpdate() { el.textContent = Math.floor(obj.val) + suffix; }
+          });
+        }
+      });
+    });
+
+    // Stat cells stagger reveal
+    gsap.from('.stat-cell', {
+      opacity: 0,
+      y: 40,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: { trigger: '#stats-bar', start: 'top 85%' }
+    });
+  }
+
+  // ============================================================
+  // ABOUT
+  // ============================================================
+  function animateAbout() {
+    // Image clip-path reveal
+    gsap.to('#about-img-clip', {
+      clipPath: 'inset(0% 0 0 0)',
+      duration: 1.2,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '#about', start: 'top 72%' }
+    });
+
+    // Left side
+    gsap.from('#about-img-wrap', {
+      opacity: 0, x: -60,
+      duration: 1.1, ease: 'power4.out',
+      scrollTrigger: { trigger: '#about', start: 'top 72%' }
+    });
+
+    // Badge
+    gsap.to('#about-badge', {
+      opacity: 1, x: 0,
+      duration: 0.7, ease: 'power3.out', delay: 0.5,
+      scrollTrigger: { trigger: '#about', start: 'top 72%' }
+    });
+
+    // Content right
+    gsap.from('#about-content > *', {
+      opacity: 0, y: 30,
+      duration: 0.8, ease: 'power3.out',
+      stagger: 0.12,
+      scrollTrigger: { trigger: '#about-content', start: 'top 78%' }
+    });
+  }
+
+  // ============================================================
+  // PROGRAMS
+  // ============================================================
+  function animatePrograms() {
+    gsap.from('.section-hed', {
+      opacity: 0, y: 40,
+      duration: 0.9, ease: 'power4.out',
+      scrollTrigger: { trigger: '#programs', start: 'top 80%' }
+    });
+
+    ['#pc-1','#pc-2','#pc-3','#pc-4'].forEach((id, i) => {
+      gsap.from(id, {
+        opacity: 0, y: 60,
+        duration: 0.8, ease: 'power3.out',
+        delay: i * 0.1,
+        scrollTrigger: { trigger: '.programs-grid', start: 'top 82%' }
+      });
+    });
+
+    // 3D tilt
+    document.querySelectorAll('.prog-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+        gsap.to(card, {
+          rotateY: nx * 6,
+          rotateX: -ny * 6,
+          transformPerspective: 900,
+          duration: 0.35,
+          ease: 'power2.out',
+        });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          rotateY: 0, rotateX: 0,
+          duration: 0.7, ease: 'elastic.out(1, 0.55)',
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // ROSTER DRAG SCROLL
+  // ============================================================
+  function initRoster() {
+    gsap.from('.athlete-card', {
+      opacity: 0, x: 50,
+      duration: 0.75, ease: 'power3.out',
+      stagger: 0.12,
+      scrollTrigger: { trigger: '#roster', start: 'top 80%' }
+    });
+
+    const el = document.getElementById('roster-scroll');
+    let down = false, startX, sl;
+    el.addEventListener('mousedown', e => { down = true; startX = e.pageX - el.offsetLeft; sl = el.scrollLeft; });
+    el.addEventListener('mouseleave', () => { down = false; });
+    el.addEventListener('mouseup', () => { down = false; });
+    el.addEventListener('mousemove', e => {
+      if (!down) return;
+      e.preventDefault();
+      el.scrollLeft = sl - ((e.pageX - el.offsetLeft) - startX) * 1.8;
+    });
+  }
+
+  // ============================================================
+  // PHILOSOPHY
+  // ============================================================
+  function animatePhilosophy() {
+    gsap.from('.phi-tile', {
+      opacity: 0, scale: 0.88,
+      duration: 0.7, ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: { trigger: '#philosophy', start: 'top 80%' }
+    });
+  }
+
+  // ============================================================
+  // CTA
+  // ============================================================
+  function animateCTA() {
+    gsap.from('#cta-hed', {
+      opacity: 0, y: 50,
+      duration: 1, ease: 'power4.out',
+      scrollTrigger: { trigger: '#cta', start: 'top 78%' }
+    });
+    gsap.from('#cta-btns', {
+      opacity: 0, y: 30,
+      duration: 0.8, ease: 'power3.out', delay: 0.15,
+      scrollTrigger: { trigger: '#cta', start: 'top 78%' }
+    });
+    gsap.from('#cta-loc', {
+      opacity: 0, y: 20,
+      duration: 0.7, ease: 'power3.out', delay: 0.3,
+      scrollTrigger: { trigger: '#cta', start: 'top 78%' }
+    });
+
+    // Magnetic buttons
+    document.querySelectorAll('.btn-cta').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        gsap.to(btn, {
+          x: ((e.clientX - r.left) - r.width / 2) * 0.22,
+          y: ((e.clientY - r.top) - r.height / 2) * 0.22,
+          duration: 0.35, ease: 'power2.out',
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+      });
+    });
+  }
+
+  // ============================================================
+  // INIT ALL
+  // ============================================================
+  function initPage() {
+    gsap.registerPlugin(ScrollTrigger);
+    initLenis();
+    initNav();
+    addHoverTargets();
+    animateHero();
+    initCounters();
+    animateAbout();
+    animatePrograms();
+    initRoster();
+    animatePhilosophy();
+    animateCTA();
+
+    // Magnetic nav button
+    const btnNav = document.querySelector('.btn-nav');
+    if (btnNav) {
+      btnNav.addEventListener('mousemove', e => {
+        const r = btnNav.getBoundingClientRect();
+        gsap.to(btnNav, {
+          x: ((e.clientX - r.left) - r.width / 2) * 0.25,
+          y: ((e.clientY - r.top) - r.height / 2) * 0.25,
+          duration: 0.35, ease: 'power2.out',
+        });
+      });
+      btnNav.addEventListener('mouseleave', () => {
+        gsap.to(btnNav, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+      });
+    }
+  }
+
+})();
+</script>
+
+</body>
+</html>
