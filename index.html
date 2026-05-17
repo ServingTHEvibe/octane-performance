@@ -252,7 +252,9 @@ body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(2
 .hero-media {
   position: relative;
   width: 60%;
+  height: 100vh;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .hero-media img,
 .hero-media video {
@@ -1935,7 +1937,7 @@ body.is-loading main, body.is-loading footer, body.is-loading #navbar {
   // ============================================================
   function animateHero() {
     const tl = gsap.timeline({ delay: 0.1 });
-    gsap.set('#hero-img', { yPercent: -8 });
+    gsap.set('#hero-video', { yPercent: -8 });
 
     tl.to('#hero-eyebrow', { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' });
     tl.to('.hero-headline-line span', {
@@ -1947,7 +1949,7 @@ body.is-loading main, body.is-loading footer, body.is-loading #navbar {
     tl.to('#hero-cta',  { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4');
     tl.to('#hero-gold-line', { scaleX: 1, duration: 0.8, ease: 'power4.out' }, '-=0.5');
 
-    gsap.to('#hero-img', {
+    gsap.to('#hero-video', {
       yPercent: 18, ease: 'none',
       scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
     });
