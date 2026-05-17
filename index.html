@@ -947,6 +947,110 @@ body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(2
 }
 
 /* ============================================================
+   GALLERY / SEQUENTIAL CAROUSEL
+   ============================================================ */
+.gallery-section {
+  background: var(--black);
+  padding: 6rem 0 5rem;
+  overflow: hidden;
+  position: relative;
+}
+.gallery-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  padding: 0 2rem;
+}
+.gallery-header .eyebrow { display: block; margin-bottom: 0.5rem; }
+.gallery-header h2 { margin-top: 0.5rem; }
+.gallery-header p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: var(--silver);
+  margin-top: 0.6rem;
+  font-weight: 300;
+}
+
+/* Carousel wrap — clips overflow, centers cards */
+.seq-carousel {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.seq-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.seq-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 380px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transform-origin: center center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.seq-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+.seq-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+}
+.seq-card-label {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 1.2rem;
+  right: 1.2rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+
+/* Nav buttons */
+.seq-nav {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.seq-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.07);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.seq-btn:hover {
+  background: rgba(212,162,0,0.2);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.seq-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ============================================================
    PHILOSOPHY TILES
    ============================================================ */
 .philosophy-section { background: var(--surface); }
@@ -1365,6 +1469,7 @@ body.is-loading main, body.is-loading footer, body.is-loading #navbar {
     <a class="nav-link" href="#camp">Camp</a>
     <a class="nav-link" href="#about">About</a>
     <a class="nav-link" href="#roster">Roster</a>
+    <a class="nav-link" href="#gallery">Gallery</a>
     <a class="nav-link" href="#contact">Contact</a>
   </div>
   <button class="btn-nav">Register Now</button>
@@ -1664,6 +1769,26 @@ body.is-loading main, body.is-loading footer, body.is-loading #navbar {
           <div class="athlete-sport">COMBINE TRAINING</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== GALLERY ===== -->
+  <section class="gallery-section" id="gallery">
+    <div class="gallery-header">
+      <span class="eyebrow">Behind the Work</span>
+      <h2 class="section-hed" style="margin-top:0.5rem;">THE GALLERY</h2>
+      <p>Training sessions, facilities, and moments that define Octane Performance</p>
+    </div>
+    <div class="seq-carousel" id="seqCarousel">
+      <div class="seq-track" id="seqTrack"></div>
+    </div>
+    <div class="seq-nav">
+      <button class="seq-btn" id="seqPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="seq-btn" id="seqNext" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   </section>
 
@@ -2160,6 +2285,179 @@ body.is-loading main, body.is-loading footer, body.is-loading #navbar {
       });
     }
   }
+
+})();
+
+// ============================================================
+// SEQUENTIAL CAROUSEL — ported from Framer SequentialCarousel
+// ============================================================
+(function() {
+  const IMAGES = [
+    {
+      src: 'https://storage.googleapis.com/runable-templates/cli-uploads%2FZIX2LGyxT7vD8jIY8yaL3uxhEGAVTuEu%2Fh92NazhDQn_J8J2Gb3Pb9%2F472764664_1138165881071750_8548344301273537381_n_m-nSze.jpg',
+      label: 'TRAINING FACILITY'
+    },
+    {
+      src: 'https://storage.googleapis.com/runable-templates/cli-uploads%2FZIX2LGyxT7vD8jIY8yaL3uxhEGAVTuEu%2FEm-q494hNX7npfs4NNplJ%2F472798329_1138163871071951_3273851248295695314_n_aZ8NI_.jpg',
+      label: 'COACHING SESSION'
+    },
+    {
+      src: 'https://storage.googleapis.com/runable-templates/cli-uploads%2FZIX2LGyxT7vD8jIY8yaL3uxhEGAVTuEu%2FNAbD55eqFfkLNm_qVdiI_%2F437111143_3671221123092373_6751750925411086531_n_H8PmBA.jpg',
+      label: 'LEVI\'S STADIUM'
+    },
+    {
+      src: 'https://storage.googleapis.com/runable-templates/cli-uploads%2FZIX2LGyxT7vD8jIY8yaL3uxhEGAVTuEu%2FuFeRbFGmNg9rjGxIi9atK%2Falex_bio.jpg',
+      label: 'ALEX GARCIA — HEAD COACH'
+    }
+  ];
+
+  const CARD_WIDTH    = 280;
+  const CARD_GAP      = 300;  // px between card centers
+  const VISIBLE       = 2;    // cards visible on each side
+  const FADE_START    = 2;    // fade out beyond this index
+  const ANIM_DURATION = 600;  // ms
+  const SEQ_DELAY     = 80;   // ms between card animations
+  const REPEAT_COUNT  = 40;   // repeat array for "infinite" feel
+
+  // Build infinite array
+  const POOL = [];
+  for (let i = 0; i < REPEAT_COUNT; i++) {
+    IMAGES.forEach((img, j) => POOL.push({ ...img, key: i * IMAGES.length + j }));
+  }
+  let currentIndex = Math.floor(POOL.length / 2);
+  // Snap to nearest image boundary
+  currentIndex = Math.round(currentIndex / IMAGES.length) * IMAGES.length;
+
+  const track = document.getElementById('seqTrack');
+  if (!track) return;
+
+  // Create card elements (only the visible window around center)
+  const WINDOW = VISIBLE * 2 + 1; // total cards rendered
+  const cardEls = [];
+
+  for (let i = 0; i < WINDOW; i++) {
+    const card = document.createElement('div');
+    card.className = 'seq-card';
+    card.innerHTML = '<img draggable="false" /><div class="seq-card-overlay"></div><div class="seq-card-label"></div>';
+    track.appendChild(card);
+    cardEls.push(card);
+  }
+
+  function getPoolItem(idx) {
+    return POOL[((idx % POOL.length) + POOL.length) % POOL.length];
+  }
+
+  function getCardStyle(position) {
+    // position: -VISIBLE ... 0 ... +VISIBLE
+    const absPos = Math.abs(position);
+    const sign   = Math.sign(position) || 1;
+
+    // Cumulative gap: each step uses reduced gap multiplier
+    let tx = 0;
+    for (let i = 1; i <= absPos; i++) {
+      const gapMult = Math.max(0.3, 1 - (i - 1) * 0.15);
+      tx += CARD_GAP * gapMult;
+    }
+    tx *= sign;
+
+    const scale   = Math.max(0.65, 1 - absPos * 0.12);
+    const opacity = absPos > FADE_START ? 0 : 1;
+    const zIndex  = 100 - absPos * 10;
+
+    return { tx, scale, opacity, zIndex };
+  }
+
+  function updateCards(animate, direction) {
+    // direction: +1 = moved right (next), -1 = moved left (prev)
+    for (let i = 0; i < WINDOW; i++) {
+      const position = i - VISIBLE; // -2,-1,0,1,2
+      const item     = getPoolItem(currentIndex + position);
+      const style    = getCardStyle(position);
+      const card     = cardEls[i];
+
+      // Update image & label
+      const img   = card.querySelector('img');
+      const label = card.querySelector('.seq-card-label');
+      if (img.src !== item.src) img.src = item.src;
+      label.textContent = item.label;
+
+      if (!animate) {
+        card.style.transition = 'none';
+        applyStyle(card, style, position);
+        return;
+      }
+
+      // Sequential delay: moving right → far-left cards first; moving left → far-right first
+      // direction +1 → sequence from left (-VISIBLE) to right (+VISIBLE)
+      // direction -1 → sequence from right (+VISIBLE) to left (-VISIBLE)
+      let seqOrder;
+      if (direction > 0) {
+        seqOrder = position + VISIBLE; // 0,1,2,3,4
+      } else {
+        seqOrder = VISIBLE - position; // 4,3,2,1,0
+      }
+
+      const delay = seqOrder * SEQ_DELAY;
+      card.style.transition = `transform ${ANIM_DURATION}ms cubic-bezier(0.4,0,0.2,1) ${delay}ms, opacity ${ANIM_DURATION}ms ease ${delay}ms`;
+      applyStyle(card, style, position);
+    }
+  }
+
+  function applyStyle(card, style, position) {
+    card.style.transform = `translate(calc(-50% + ${style.tx}px), -50%) scale(${style.scale})`;
+    card.style.opacity   = style.opacity;
+    card.style.zIndex    = style.zIndex;
+  }
+
+  let animating = false;
+  function advance() {
+    if (animating) return;
+    animating = true;
+    currentIndex++;
+    updateCards(true, 1);
+    setTimeout(() => { animating = false; }, ANIM_DURATION + WINDOW * SEQ_DELAY + 50);
+  }
+  function goBack() {
+    if (animating) return;
+    animating = true;
+    currentIndex--;
+    updateCards(true, -1);
+    setTimeout(() => { animating = false; }, ANIM_DURATION + WINDOW * SEQ_DELAY + 50);
+  }
+
+  // Initial render (no animation)
+  for (let i = 0; i < WINDOW; i++) {
+    const position = i - VISIBLE;
+    const item     = getPoolItem(currentIndex + position);
+    const style    = getCardStyle(position);
+    const card     = cardEls[i];
+    card.querySelector('img').src              = item.src;
+    card.querySelector('.seq-card-label').textContent = item.label;
+    card.style.transition = 'none';
+    applyStyle(card, style, position);
+  }
+
+  document.getElementById('seqNext').addEventListener('click', advance);
+  document.getElementById('seqPrev').addEventListener('click', goBack);
+
+  // Keyboard support
+  document.addEventListener('keydown', e => {
+    const sec = document.getElementById('gallery');
+    const rect = sec.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      if (e.key === 'ArrowRight') advance();
+      if (e.key === 'ArrowLeft')  goBack();
+    }
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  const carousel = document.getElementById('seqCarousel');
+  carousel.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  carousel.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) dx < 0 ? advance() : goBack();
+  });
 
 })();
 </script>
